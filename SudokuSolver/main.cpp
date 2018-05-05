@@ -65,10 +65,10 @@ void print(char a[N][N])
 		for (int j = 0; j < N; j++)
 		{
 			if (j == 3 || j == 6)
-				printf("¡U");
-			printf("¡U%c", a[i][j]);
+				printf("Â¡U");
+			printf("Â¡U%c", a[i][j]);
 		}
-		printf("¡U\n");
+		printf("Â¡U\n");
 	}
 	printf(" ---------  ---------  ---------\n");
 }
@@ -121,7 +121,7 @@ bool checker(char a[N][N])
 			}
 		}
 	}
-	//colume check
+	//column check
 	for (int i = 0; i < N; i++)
 	{
 		iniIsUsed(isUsed);
