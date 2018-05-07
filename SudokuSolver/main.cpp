@@ -4,6 +4,8 @@
 // Problem statement: Sudoku Solver
 
 #include <iostream>
+#include <string>
+#include <set>
 #include <fstream>
 #define N 9
 
@@ -14,6 +16,12 @@ bool load();
 bool checker(char a[N][N]);
 void iniIsUsed(bool u[N]);
 bool solver(char a[N][N], int h, int w);
+void findRegionNumbers(char a[N][N], int row, int column);
+std::string findCeilNumbers(int row, int column);
+
+std::string rowN[N];
+std::string columnN[N];
+std::string boxN[N];
 
 //sudoku map, 'n' is non-number.
 char a[N][N] = { 'n','n','n','n','n','n','n','n','n',
@@ -38,6 +46,7 @@ int main()
 	}
 	else
 	{
+		findRegionNumbers(a, 0, 0);
 		//find the answer
 		if (solver(a, 0, 0))
 		{
@@ -65,10 +74,10 @@ void print(char a[N][N])
 		for (int j = 0; j < N; j++)
 		{
 			if (j == 3 || j == 6)
-				printf("Â¡U");
-			printf("Â¡U%c", a[i][j]);
+				printf("¡U");
+			printf("¡U%c", a[i][j]);
 		}
-		printf("Â¡U\n");
+		printf("¡U\n");
 	}
 	printf(" ---------  ---------  ---------\n");
 }
@@ -121,7 +130,7 @@ bool checker(char a[N][N])
 			}
 		}
 	}
-	//column check
+	//colume check
 	for (int i = 0; i < N; i++)
 	{
 		iniIsUsed(isUsed);
@@ -168,30 +177,100 @@ void iniIsUsed(bool u[N])
 
 bool solver(char a[N][N], int h, int w)
 {
+	system("CLS");
+	print(a);
 	//get the next height
 	int nexth = (w == N - 1) ? h + 1 : h;
 
 	//get the next width
 	int nextw = (w + 1) % N;
 
-	//if now height bigger than N, the sudoku is finish
+	//if now height bigger than N, the sudoku is finished
 	if (h == N)return true;
 
 	//if the ceil is setted by question, skip this ceil
 	if (isComfirmed[h][w])
 		return solver(a, nexth, nextw);
 
+	std::string temp = findCeilNumbers(h, w);
+	if (temp.length() == 0)
+		return false;
+
 	//try 1~9 when the ceil is 'n'
-	for (char value = '1'; value <= '9'; value++)
+	for (int i=0;i<(int)temp.length();i++)
 	{
+		char value = temp[i];
 		a[h][w] = value;
 
+		int indexOfBox = (h / 3) * 3 + w / 3;
+		rowN[h] += value;
+		columnN[w] += value;
+		boxN[indexOfBox] += value;
+
+
 		//if the map is OK now, try next ceil.
-		if (checker(a) && solver(a, nexth, nextw))
+		if (solver(a, nexth, nextw))
 			return true;
 		//if the map is not OK, set it to 'n' and try next ceil.
 		a[h][w] = 'n';
+		
+		int pos = rowN[h].find(value);
+		rowN[h].erase(pos);
+		pos = columnN[w].find(value);
+		columnN[w].erase(pos);
+		pos = boxN[indexOfBox].find(value);
+		boxN[indexOfBox].erase(pos);
 	}
 
 	return false;
 }
+
+void findRegionNumbers(char a[N][N],int row, int column)
+{
+	//get the next row
+	int nextr = (column == N - 1) ? row + 1 : row;
+
+	//get the next column
+	int nextc = (column + 1) % N;
+
+	if (row != N)
+	{
+		if (a[row][column] >= '1'&&a[row][column] <= '9')
+		{
+			int indexOfBox = (row / 3) * 3 + column / 3;
+			rowN[row] += a[row][column];
+			columnN[column] += a[row][column];
+			boxN[indexOfBox] += a[row][column];
+		}
+		findRegionNumbers(a, nextr, nextc);
+	}
+
+}
+
+std::string findCeilNumbers(int row, int column)
+{
+	std::string ans;
+	bool r[N] = { true,true,true,true,true,true,true,true,true };
+	bool c[N] = { true,true,true,true,true,true,true,true,true };
+	bool b[N] = { true,true,true,true,true,true,true,true,true };
+	int indexOfBox = (row / 3) * 3 + column / 3;
+	for (int i = 0; i < (int)rowN[row].size(); i++)
+	{
+		r[rowN[row][i]-'1'] = 0;
+	}
+	for (int i = 0; i < (int)columnN[column].size(); i++)
+	{
+		c[columnN[column][i] - '1'] = 0;
+	}
+	for (int i = 0; i < (int)boxN[indexOfBox].size(); i++)
+	{
+		b[boxN[indexOfBox][i] - '1'] = 0;
+	}
+	for (int i = 0; i < N; i++)
+	{
+		if (r[i] && c[i] && b[i])
+			ans += i + '1';
+	}
+	return ans;
+}
+
