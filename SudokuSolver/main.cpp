@@ -1,6 +1,6 @@
-// Name: B10615032
+// Name: zero871015
 // Date: 2018/05/04
-// Last Update: 2018/05/09
+// Last Update: 2018/05/10
 // Problem statement: Sudoku Solver
 
 #include <iostream>
@@ -13,7 +13,7 @@ const std::string FILE_NAME = "Question.txt";
 void print(char a[N][N]);
 bool load();
 bool findMoreTips();
-bool solver(char a[N][N], int h, int w);
+bool solver(char a[N][N], int row, int column);
 void findCeilNumbers(int row, int column);
 bool fillInNumber(int row, int column);
 bool checker(char a[N][N]);
@@ -89,10 +89,10 @@ void print(char a[N][N])
 		for (int j = 0; j < N; j++)
 		{
 			if (j == 3 || j == 6)
-				printf("¡U");
-			printf("¡U%c", a[i][j]);
+				printf("Â¡U");
+			printf("Â¡U%c", a[i][j]);
 		}
-		printf("¡U\n");
+		printf("Â¡U\n");
 	}
 	printf(" ---------  ---------  ---------\n");
 }
